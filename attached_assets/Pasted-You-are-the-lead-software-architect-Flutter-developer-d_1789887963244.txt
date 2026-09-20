@@ -1,0 +1,1018 @@
+You are the lead software architect, Flutter developer, database engineer, UI/UX designer, QA engineer, and deployment engineer for this project.
+
+Build a complete, working Nail Paint Manufacturing & Business Management System.
+
+This is a REAL business application, not a UI prototype.
+
+The application must manage the complete business lifecycle:
+
+RAW MATERIAL PURCHASE
+→ RAW MATERIAL STOCK
+→ PRODUCT/BOM
+→ PRODUCTION
+→ FINISHED PRODUCT STOCK
+→ SALES
+→ PAYMENTS
+→ EXPENSES
+→ COGS
+→ GROSS PROFIT
+→ NET PROFIT
+→ REPORTS
+
+==================================================
+
+1. FIRST: INSPECT THE ENVIRONMENT
+   ==================================================
+
+Before writing code:
+
+1. Inspect the existing Replit project.
+2. Determine what framework/runtime is available.
+3. Check whether Flutter/Android tooling is available.
+4. Check installed packages and database options.
+5. Do not delete existing useful files.
+6. If the project is empty, create the required architecture.
+
+If Flutter Android build tooling is not available in the current environment, create the application using an architecture that can still be developed/tested in Replit and keep the code portable for Android Studio/Flutter.
+
+Do NOT claim an APK has been generated unless an actual APK build succeeds.
+
+==================================================
+2. PRODUCT GOAL
+
+The app must be extremely easy for a small nail-paint manufacturing business owner to use.
+
+The owner should enter minimum information.
+
+Core principle:
+
+ENTER DATA ONCE → EVERYTHING ELSE UPDATES AUTOMATICALLY.
+
+Do not make the user manually update stock after purchases, production, or sales.
+
+==================================================
+3. CORE MODULES
+
+Create these modules:
+
+1. Dashboard
+2. Raw Materials
+3. Suppliers
+4. Purchases
+5. Products
+6. Product BOM/Recipe
+7. Production
+8. Finished Products
+9. Customers
+10. Sales
+11. Payments
+12. Expenses
+13. Stock Ledger
+14. Reports
+15. Users/Roles
+16. Settings
+17. Backup/Restore
+
+==================================================
+4. RAW MATERIALS
+
+Initial materials:
+
+- Brush
+- Glass bottle
+- Cap
+- Chemical
+- Colour/Pigment
+- Box
+
+Each material must have:
+
+- ID
+- Name
+- Category
+- Purchase unit
+- Consumption/base unit
+- Minimum stock
+- Current stock
+- Average cost
+- Active/inactive
+
+Support unit conversion.
+
+Example:
+
+Chemical purchase:
+
+20 L
+
+Internal stock:
+
+20,000 ml
+
+Production consumption:
+
+5,000 ml
+
+Remaining:
+
+15,000 ml
+
+The user must be able to enter purchases in litres without manually converting to ml.
+
+==================================================
+5. PRODUCT MASTER
+
+Each nail-paint product must have:
+
+- Product ID
+- SKU/Product code
+- Product name
+- Colour
+- Bottle size
+- Selling price
+- Minimum finished-stock level
+- Active/inactive
+
+Example:
+
+Ruby Red
+10 ml
+Selling price: configurable
+
+==================================================
+6. BOM / RECIPE
+
+Each product has a recipe/BOM.
+
+Example:
+
+Ruby Red 10 ml:
+
+Chemical = 10 ml
+Brush = 1 pc
+Glass bottle = 1 pc
+Cap = 1 pc
+Ruby Red pigment = configurable quantity
+
+The recipe is entered ONCE.
+
+Production must automatically use the recipe.
+
+==================================================
+7. BOX MANAGEMENT
+
+One box contains:
+
+24 bottles.
+
+The application must understand:
+
+24 bottles = 1 box
+
+240 bottles = 10 boxes
+
+252 bottles = 10 boxes + 12 bottles
+
+Do not create fake finished products for boxes.
+
+Box packaging consumption must be configurable.
+
+==================================================
+8. PURCHASES
+
+Purchase entry should be simple.
+
+Required:
+
+- Supplier
+- Material
+- Quantity
+- Unit
+- Purchase price
+- Date
+
+Optional:
+
+- Invoice number
+- Notes
+- Attachment
+
+After saving:
+
+Purchase record is created.
+Stock automatically increases.
+Stock ledger entry is created.
+Average material cost is recalculated.
+
+All of these must happen inside one database transaction.
+
+==================================================
+9. STOCK LEDGER
+
+Never rely on manually entered current stock.
+
+Create a complete stock ledger.
+
+Every stock movement must contain:
+
+- Transaction ID
+- Date/time
+- Item
+- Quantity in
+- Quantity out
+- Unit
+- Transaction type
+- Reference ID
+- User
+- Notes
+
+Transaction types:
+
+PURCHASE
+PRODUCTION_CONSUMPTION
+PRODUCTION_OUTPUT
+SALE
+SALES_RETURN
+PURCHASE_RETURN
+ADJUSTMENT
+DAMAGE
+WASTAGE
+
+Current stock is derived from transactions.
+
+Only authorized users can make manual adjustments.
+
+Never allow negative stock during normal operations.
+
+==================================================
+10. PRODUCTION
+
+Production must be extremely simple.
+
+User enters:
+
+Product
+Quantity
+
+Example:
+
+Ruby Red
+500 bottles
+
+The application automatically calculates:
+
+Chemical required
+Brush required
+Glass required
+Cap required
+Pigment required
+Boxes required
+
+Before production confirmation show:
+
+REQUIRED
+AVAILABLE
+SHORTAGE
+
+Example:
+
+Brush
+Required: 500
+Available: 420
+Shortage: 80
+
+If anything is insufficient:
+
+BLOCK PRODUCTION.
+
+Display exactly what is missing.
+
+If everything is available:
+
+Allow confirmation.
+
+After confirmation:
+
+1. Deduct raw materials.
+2. Add finished goods.
+3. Create stock ledger records.
+4. Calculate production cost.
+5. Save production transaction.
+
+All operations must occur in ONE database transaction.
+
+If any step fails, roll everything back.
+
+==================================================
+11. PRODUCTION COST
+
+Calculate product cost from consumed material costs.
+
+Initially use weighted average cost.
+
+Example:
+
+Chemical = SAR 500
+Brush = SAR 100
+Glass = SAR 300
+Cap = SAR 150
+Pigment = SAR 200
+
+Total = SAR 1,250
+
+Production quantity = 100
+
+Unit cost = SAR 12.50
+
+Store production cost.
+
+Do not hard-code costs.
+
+==================================================
+12. SALES
+
+Sales entry:
+
+Customer
+Product
+Quantity
+Selling price
+Payment method
+Date
+
+Selling price should automatically load from product settings.
+
+Authorized users can override it.
+
+When sale is confirmed:
+
+1. Check finished stock.
+2. Prevent negative stock.
+3. Deduct finished stock.
+4. Calculate revenue.
+5. Calculate COGS.
+6. Calculate gross profit.
+7. Create payment record if paid.
+8. Create customer receivable if credit.
+9. Create stock ledger record.
+
+Formula:
+
+Revenue = Quantity × Selling Price
+
+COGS = Quantity × Product Cost
+
+Gross Profit = Revenue − COGS
+
+==================================================
+13. CUSTOMERS
+
+Fields:
+
+Customer ID
+Name
+Phone
+Address
+Opening balance
+Credit limit
+Status
+
+Support:
+
+Cash sale
+Credit sale
+Partial payment
+Full payment
+Outstanding balance
+
+==================================================
+14. SUPPLIERS
+
+Fields:
+
+Supplier ID
+Name
+Phone
+Address
+Opening balance
+Payment terms
+Status
+
+Support:
+
+Purchases
+Supplier payments
+Outstanding balance
+
+==================================================
+15. EXPENSES
+
+Expense categories:
+
+Labour
+Rent
+Electricity
+Transport
+Delivery
+Marketing
+Packaging
+Maintenance
+Office
+Other
+
+Fields:
+
+Expense ID
+Category
+Amount
+Date
+Payment method
+Description
+Receipt attachment
+
+==================================================
+16. PROFIT & LOSS
+
+Calculate:
+
+TOTAL REVENUE
+− COGS
+= GROSS PROFIT
+
+GROSS PROFIT
+− OPERATING EXPENSES
+= NET PROFIT
+
+Show:
+
+Revenue
+COGS
+Gross Profit
+Gross Margin %
+Expenses
+Net Profit
+Net Margin %
+
+Filters:
+
+Today
+This week
+This month
+This year
+Custom date
+
+==================================================
+17. DASHBOARD
+
+Create a clean business dashboard.
+
+Cards:
+
+Today's Sales
+Monthly Sales
+Products Sold
+Gross Profit
+Net Profit
+Expenses
+Raw Material Value
+Finished Stock Value
+Customer Receivables
+Supplier Payables
+
+Alerts:
+
+Low raw material
+Low finished stock
+Outstanding customer payments
+Outstanding supplier payments
+
+Charts:
+
+Sales trend
+Profit trend
+Expenses
+Top-selling products
+
+==================================================
+18. REPORTS
+
+Create:
+
+Sales Report
+Purchase Report
+Production Report
+Raw Material Stock Report
+Finished Product Stock Report
+Stock Ledger
+Expense Report
+Customer Outstanding
+Supplier Outstanding
+Profit & Loss
+Product Profitability
+
+Reports must have date filters.
+
+Where practical, provide:
+
+PDF export
+CSV/Excel export
+Print/share
+
+==================================================
+19. SEARCH AND FILTERS
+
+All major screens need:
+
+Search
+Date filter
+Category filter
+Product filter
+Supplier filter
+Customer filter
+Sort
+Clear filters
+
+==================================================
+20. USERS AND SECURITY
+
+Create:
+
+ADMIN
+PRODUCTION
+SALES
+ACCOUNTANT
+
+Admin:
+Everything
+
+Production:
+Production + relevant stock
+
+Sales:
+Sales + customers
+
+Accountant:
+Purchases + expenses + payments + reports
+
+Implement role-based access.
+
+==================================================
+21. DATABASE
+
+Use a relational database.
+
+Tables should include at minimum:
+
+users
+roles
+materials
+material_categories
+units
+suppliers
+purchases
+purchase_items
+products
+product_bom
+production
+production_items
+customers
+sales
+sale_items
+payments
+expenses
+stock_transactions
+settings
+
+Use:
+
+Primary keys
+Foreign keys
+Indexes
+Constraints
+Timestamps
+
+Avoid duplicated data.
+
+==================================================
+22. DATA INTEGRITY
+
+Use database transactions for:
+
+Purchase
+Production
+Sale
+Return
+Payment
+
+Example production transaction:
+
+BEGIN
+
+Create production
+Deduct chemical
+Deduct brush
+Deduct glass
+Deduct cap
+Deduct pigment
+Add finished product
+Create stock ledger entries
+
+COMMIT
+
+If any operation fails:
+
+ROLLBACK
+
+Never leave partial records.
+
+==================================================
+23. RETURNS
+
+Implement:
+
+Sales return
+Purchase return
+
+Sales return should:
+
+Increase finished stock.
+Reverse appropriate COGS.
+Reduce revenue.
+Adjust customer/payment balance.
+
+Purchase return should:
+
+Decrease raw-material stock.
+Adjust supplier balance.
+Reverse appropriate purchase amount.
+
+==================================================
+24. STOCK ADJUSTMENT
+
+Authorized users can create:
+
+Stock increase
+Stock decrease
+Damage
+Wastage
+
+Every adjustment requires:
+
+Reason
+Quantity
+User
+Date/time
+
+Never silently modify stock.
+
+==================================================
+25. UI/UX
+
+Design for mobile first.
+
+Use:
+
+Large buttons
+Simple forms
+Dropdowns
+Searchable dropdowns
+Clear labels
+Minimal typing
+Confirmation dialogs
+Success/error messages
+Readable tables
+Clean dashboard
+
+Avoid unnecessary animations.
+
+Use professional business styling.
+
+Do not overload the home screen.
+
+==================================================
+26. DATA ENTRY MINIMIZATION
+
+This is extremely important.
+
+Example:
+
+For production, user should only need:
+
+Product
+Quantity
+
+For sales:
+
+Customer
+Product
+Quantity
+
+For purchase:
+
+Supplier
+Material
+Quantity
+Price
+
+Everything else should be automatically calculated or selected.
+
+==================================================
+27. SAMPLE DATA
+
+Create a DEMO mode or sample dataset.
+
+Materials:
+
+Chemical
+Brush
+Glass
+Cap
+Ruby Red Pigment
+
+Product:
+
+Ruby Red 10 ml
+
+BOM:
+
+Chemical = 10 ml
+Brush = 1
+Glass = 1
+Cap = 1
+Pigment = configurable
+
+Sample purchases:
+
+Chemical = 20 L
+Brush = 1,000 pcs
+Glass = 1,000 pcs
+Cap = 1,000 pcs
+
+Sample production:
+
+500 bottles
+
+Sample sale:
+
+100 bottles
+
+Sample expense:
+
+SAR 500 transport
+
+Use this data to verify calculations.
+
+==================================================
+28. AUTOMATED TESTS
+
+Create tests for:
+
+Unit conversion
+Purchase stock increase
+Weighted average cost
+BOM calculation
+Production material deduction
+Production finished stock
+Insufficient stock
+Sales stock deduction
+COGS
+Gross profit
+Net profit
+Box calculation
+Sales return
+Purchase return
+Customer balance
+Supplier balance
+Stock ledger
+Database rollback
+Permissions
+
+==================================================
+29. TEST SCENARIO
+
+Verify this exact scenario:
+
+Purchase:
+
+20 L chemical
+
+Then produce:
+
+500 × 10 ml bottles
+
+Chemical consumption must be:
+
+5,000 ml
+
+Remaining chemical:
+
+15,000 ml
+
+If brush/glass/cap stock was 1,000 each:
+
+Remaining:
+
+500 each
+
+Finished stock:
+
+500 bottles
+
+Then sell:
+
+100 bottles
+
+Finished stock:
+
+400 bottles
+
+Calculate revenue, COGS and gross profit automatically.
+
+Add:
+
+SAR 500 expense
+
+Verify net profit.
+
+Display the calculations clearly in the test results.
+
+==================================================
+30. BACKUP
+
+Provide:
+
+Export database/data
+Import backup
+Restore backup
+
+Do not overwrite existing data without confirmation.
+
+Design the database so cloud synchronization can be added later.
+
+==================================================
+31. ANDROID PREPARATION
+
+The final architecture must be suitable for Android.
+
+Prepare:
+
+App icon placeholder
+Splash screen
+App name:
+Nail Business Manager
+
+Package/application ID:
+Use a sensible placeholder such as:
+
+com.example.nailbusinessmanager
+
+Make this easy to change later.
+
+If Android build tooling is available, test the Android build.
+
+If not available, clearly explain what must be done in Android Studio.
+
+==================================================
+32. DEVELOPMENT METHOD
+
+DO NOT generate the entire application as one giant file.
+
+Use modular architecture.
+
+Build in this order:
+
+PHASE 1
+Project architecture
+Database
+Models
+Repositories
+Unit conversion
+
+PHASE 2
+Materials
+Suppliers
+Purchases
+Stock ledger
+
+PHASE 3
+Products
+BOM
+Production
+Finished stock
+
+PHASE 4
+Customers
+Sales
+Payments
+Returns
+
+PHASE 5
+Expenses
+COGS
+Profit & Loss
+
+PHASE 6
+Dashboard
+Reports
+Charts
+
+PHASE 7
+Users
+Roles
+Permissions
+Backup
+
+PHASE 8
+Testing
+Bug fixing
+UI polish
+Build verification
+
+After every phase:
+
+1. Run the application.
+2. Run tests.
+3. Fix errors.
+4. Verify existing modules.
+5. Continue only after the current phase works.
+
+==================================================
+33. IMPORTANT CODING RULES
+
+Do not:
+
+- Create fake buttons that do nothing.
+- Create static dashboard numbers.
+- Hard-code stock.
+- Hard-code profit.
+- Hard-code product costs.
+- Allow negative stock accidentally.
+- Duplicate business data unnecessarily.
+- Delete working code just to simplify implementation.
+- Hide errors.
+- Claim something works without testing it.
+
+Every button should perform a real function.
+
+Every displayed number should come from the database/calculation engine.
+
+==================================================
+34. ERROR HANDLING
+
+For every operation:
+
+Validate input.
+
+Show understandable error messages.
+
+Examples:
+
+"Quantity must be greater than zero."
+
+"Insufficient Chemical stock. Required: 5,000 ml. Available: 3,500 ml."
+
+"Sale cannot be completed because finished stock is insufficient."
+
+Never expose raw database errors to normal users.
+
+==================================================
+35. FINAL ACCEPTANCE TEST
+
+The application will be considered complete only when this workflow works end-to-end:
+
+1. Create supplier.
+2. Create raw materials.
+3. Purchase raw materials.
+4. Verify stock.
+5. Create nail-paint product.
+6. Create BOM.
+7. Produce finished goods.
+8. Verify raw-material deduction.
+9. Verify finished stock.
+10. Create customer.
+11. Sell finished goods.
+12. Verify finished-stock deduction.
+13. Verify revenue.
+14. Verify COGS.
+15. Verify gross profit.
+16. Record customer payment.
+17. Record business expense.
+18. Verify net profit.
+19. View stock ledger.
+20. View reports.
+21. Export report.
+22. Backup database.
+23. Restore backup.
+24. Verify restored data.
+
+Do not stop at the UI.
+
+The objective is a working business management application.
+
+START NOW.
+
+First inspect the environment and create the project architecture.
+
+Then implement PHASE 1.
+
+Do not skip database design or testing.

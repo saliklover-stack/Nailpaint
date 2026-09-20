@@ -1,0 +1,1 @@
+- [OpenAPI date handling](openapi-date-handling.md) — generated query schemas may expect Date objects while query strings arrive from Express; normalize before validation.

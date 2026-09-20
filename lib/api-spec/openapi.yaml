@@ -1,22 +1,31 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Nail Business Manager API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: dashboard
+  - name: materials
+  - name: suppliers
+  - name: purchases
+  - name: products
+  - name: production
+  - name: customers
+  - name: sales
+  - name: expenses
+  - name: payments
+  - name: reports
+  - name: stock
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +33,701 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+  /materials:
+    get:
+      operationId: getMaterials
+      tags: [materials]
+      summary: List raw materials
+      parameters:
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Active"
+      responses:
+        "200":
+          description: Materials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Material"
+    post:
+      operationId: createMaterial
+      tags: [materials]
+      summary: Create a raw material
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaterialInput"
+      responses:
+        "201":
+          description: Created material
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Material"
+  /suppliers:
+    get:
+      operationId: getSuppliers
+      tags: [suppliers]
+      summary: List suppliers
+      responses:
+        "200":
+          description: Suppliers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Supplier"
+    post:
+      operationId: createSupplier
+      tags: [suppliers]
+      summary: Create a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupplierInput"
+      responses:
+        "201":
+          description: Created supplier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Supplier"
+  /purchases:
+    get:
+      operationId: getPurchases
+      tags: [purchases]
+      summary: List purchases
+      responses:
+        "200":
+          description: Purchases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Purchase"
+    post:
+      operationId: createPurchase
+      tags: [purchases]
+      summary: Record a raw material purchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchaseInput"
+      responses:
+        "201":
+          description: Created purchase
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Purchase"
+  /products:
+    get:
+      operationId: getProducts
+      tags: [products]
+      summary: List products with recipes
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a finished product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+  /products/{id}/bom:
+    put:
+      operationId: updateProductBom
+      tags: [products]
+      summary: Replace a product recipe
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BomInput"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+  /production/check:
+    post:
+      operationId: checkProduction
+      tags: [production]
+      summary: Preview production requirements and shortages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductionInput"
+      responses:
+        "200":
+          description: Production preview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductionCheck"
+  /production:
+    get:
+      operationId: getProductions
+      tags: [production]
+      summary: List production runs
+      responses:
+        "200":
+          description: Production runs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Production"
+    post:
+      operationId: createProduction
+      tags: [production]
+      summary: Confirm a production run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductionInput"
+      responses:
+        "201":
+          description: Created production
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Production"
+  /customers:
+    get:
+      operationId: getCustomers
+      tags: [customers]
+      summary: List customers
+      responses:
+        "200":
+          description: Customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerInput"
+      responses:
+        "201":
+          description: Created customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+  /sales:
+    get:
+      operationId: getSales
+      tags: [sales]
+      summary: List sales
+      responses:
+        "200":
+          description: Sales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Sale"
+    post:
+      operationId: createSale
+      tags: [sales]
+      summary: Record a sale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaleInput"
+      responses:
+        "201":
+          description: Created sale
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sale"
+  /payments:
+    post:
+      operationId: createPayment
+      tags: [payments]
+      summary: Record a customer payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentInput"
+      responses:
+        "201":
+          description: Created payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+  /expenses:
+    get:
+      operationId: getExpenses
+      tags: [expenses]
+      summary: List expenses
+      responses:
+        "200":
+          description: Expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
+    post:
+      operationId: createExpense
+      tags: [expenses]
+      summary: Record an expense
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "201":
+          description: Created expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+  /stock-ledger:
+    get:
+      operationId: getStockLedger
+      tags: [stock]
+      summary: List stock movements
+      parameters:
+        - $ref: "#/components/parameters/Search"
+      responses:
+        "200":
+          description: Stock movements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StockMovement"
+  /reports/profit-loss:
+    get:
+      operationId: getProfitLoss
+      tags: [reports]
+      summary: Get profit and loss summary
+      parameters:
+        - $ref: "#/components/parameters/DateFrom"
+        - $ref: "#/components/parameters/DateTo"
+      responses:
+        "200":
+          description: Profit and loss
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfitLoss"
 components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    Search:
+      name: search
+      in: query
+      required: false
+      schema:
+        type: string
+    Active:
+      name: active
+      in: query
+      required: false
+      schema:
+        type: boolean
+    DateFrom:
+      name: from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+    DateTo:
+      name: to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
   schemas:
     HealthStatus:
       type: object
       properties:
-        status:
-          type: string
-      required:
-        - status
-
+        status: { type: string }
+      required: [status]
+    Dashboard:
+      type: object
+      properties:
+        todaySales: { type: number }
+        monthSales: { type: number }
+        productsSold: { type: integer }
+        grossProfit: { type: number }
+        netProfit: { type: number }
+        expenses: { type: number }
+        rawMaterialValue: { type: number }
+        finishedStockValue: { type: number }
+        customerReceivables: { type: number }
+        supplierPayables: { type: number }
+        lowStockMaterials:
+          type: array
+          items: { $ref: "#/components/schemas/Material" }
+        lowStockProducts:
+          type: array
+          items: { $ref: "#/components/schemas/Product" }
+        recentActivity:
+          type: array
+          items: { $ref: "#/components/schemas/Activity" }
+      required: [todaySales, monthSales, productsSold, grossProfit, netProfit, expenses, rawMaterialValue, finishedStockValue, customerReceivables, supplierPayables, lowStockMaterials, lowStockProducts, recentActivity]
+    Material:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        category: { type: string }
+        purchaseUnit: { type: string }
+        baseUnit: { type: string }
+        conversionFactor: { type: number }
+        minimumStock: { type: number }
+        currentStock: { type: number }
+        averageCost: { type: number }
+        active: { type: boolean }
+      required: [id, name, category, purchaseUnit, baseUnit, conversionFactor, minimumStock, currentStock, averageCost, active]
+    MaterialInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        category: { type: string, minLength: 1 }
+        purchaseUnit: { type: string, minLength: 1 }
+        baseUnit: { type: string, minLength: 1 }
+        conversionFactor: { type: number, exclusiveMinimum: 0 }
+        minimumStock: { type: number, minimum: 0 }
+        active: { type: boolean }
+      required: [name, category, purchaseUnit, baseUnit, conversionFactor, minimumStock]
+    Supplier:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        phone: { type: string }
+        address: { type: string }
+        openingBalance: { type: number }
+        paymentTerms: { type: string }
+        outstandingBalance: { type: number }
+        active: { type: boolean }
+      required: [id, name, phone, address, openingBalance, paymentTerms, outstandingBalance, active]
+    SupplierInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        phone: { type: string }
+        address: { type: string }
+        openingBalance: { type: number, minimum: 0 }
+        paymentTerms: { type: string }
+      required: [name]
+    Purchase:
+      type: object
+      properties:
+        id: { type: integer }
+        supplierId: { type: integer }
+        supplierName: { type: string }
+        materialId: { type: integer }
+        materialName: { type: string }
+        quantity: { type: number }
+        unit: { type: string }
+        baseQuantity: { type: number }
+        price: { type: number }
+        total: { type: number }
+        date: { type: string, format: date }
+        invoiceNumber: { type: string }
+        notes: { type: string }
+      required: [id, supplierId, supplierName, materialId, materialName, quantity, unit, baseQuantity, price, total, date, invoiceNumber, notes]
+    PurchaseInput:
+      type: object
+      properties:
+        supplierId: { type: integer }
+        materialId: { type: integer }
+        quantity: { type: number, exclusiveMinimum: 0 }
+        price: { type: number, minimum: 0 }
+        date: { type: string, format: date }
+        invoiceNumber: { type: string }
+        notes: { type: string }
+      required: [supplierId, materialId, quantity, price, date]
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        sku: { type: string }
+        name: { type: string }
+        colour: { type: string }
+        bottleSize: { type: number }
+        sellingPrice: { type: number }
+        minimumStock: { type: integer }
+        currentStock: { type: integer }
+        averageCost: { type: number }
+        active: { type: boolean }
+        bom:
+          type: array
+          items: { $ref: "#/components/schemas/BomLine" }
+      required: [id, sku, name, colour, bottleSize, sellingPrice, minimumStock, currentStock, averageCost, active, bom]
+    ProductInput:
+      type: object
+      properties:
+        sku: { type: string, minLength: 1 }
+        name: { type: string, minLength: 1 }
+        colour: { type: string }
+        bottleSize: { type: number, exclusiveMinimum: 0 }
+        sellingPrice: { type: number, minimum: 0 }
+        minimumStock: { type: integer, minimum: 0 }
+      required: [sku, name, bottleSize, sellingPrice, minimumStock]
+    BomLine:
+      type: object
+      properties:
+        materialId: { type: integer }
+        materialName: { type: string }
+        quantity: { type: number, exclusiveMinimum: 0 }
+        unit: { type: string }
+      required: [materialId, materialName, quantity, unit]
+    BomInput:
+      type: object
+      properties:
+        lines:
+          type: array
+          items: { $ref: "#/components/schemas/BomLineInput" }
+      required: [lines]
+    BomLineInput:
+      type: object
+      properties:
+        materialId: { type: integer }
+        quantity: { type: number, exclusiveMinimum: 0 }
+      required: [materialId, quantity]
+    ProductionInput:
+      type: object
+      properties:
+        productId: { type: integer }
+        quantity: { type: integer, exclusiveMinimum: 0 }
+        date: { type: string, format: date }
+      required: [productId, quantity, date]
+    ProductionCheck:
+      type: object
+      properties:
+        canProduce: { type: boolean }
+        productName: { type: string }
+        quantity: { type: integer }
+        estimatedUnitCost: { type: number }
+        requirements:
+          type: array
+          items: { $ref: "#/components/schemas/Requirement" }
+      required: [canProduce, productName, quantity, estimatedUnitCost, requirements]
+    Requirement:
+      type: object
+      properties:
+        materialId: { type: integer }
+        materialName: { type: string }
+        unit: { type: string }
+        required: { type: number }
+        available: { type: number }
+        shortage: { type: number }
+      required: [materialId, materialName, unit, required, available, shortage]
+    Production:
+      type: object
+      properties:
+        id: { type: integer }
+        productId: { type: integer }
+        productName: { type: string }
+        quantity: { type: integer }
+        unitCost: { type: number }
+        totalCost: { type: number }
+        date: { type: string, format: date }
+      required: [id, productId, productName, quantity, unitCost, totalCost, date]
+    Customer:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        phone: { type: string }
+        address: { type: string }
+        openingBalance: { type: number }
+        creditLimit: { type: number }
+        outstandingBalance: { type: number }
+        active: { type: boolean }
+      required: [id, name, phone, address, openingBalance, creditLimit, outstandingBalance, active]
+    CustomerInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        phone: { type: string }
+        address: { type: string }
+        openingBalance: { type: number, minimum: 0 }
+        creditLimit: { type: number, minimum: 0 }
+      required: [name, creditLimit]
+    Sale:
+      type: object
+      properties:
+        id: { type: integer }
+        customerId: { type: integer }
+        customerName: { type: string }
+        productId: { type: integer }
+        productName: { type: string }
+        quantity: { type: integer }
+        sellingPrice: { type: number }
+        revenue: { type: number }
+        cogs: { type: number }
+        grossProfit: { type: number }
+        paymentMethod: { type: string }
+        paidAmount: { type: number }
+        balanceDue: { type: number }
+        date: { type: string, format: date }
+      required: [id, customerId, customerName, productId, productName, quantity, sellingPrice, revenue, cogs, grossProfit, paymentMethod, paidAmount, balanceDue, date]
+    SaleInput:
+      type: object
+      properties:
+        customerId: { type: integer }
+        productId: { type: integer }
+        quantity: { type: integer, exclusiveMinimum: 0 }
+        sellingPrice: { type: number, minimum: 0 }
+        paymentMethod: { type: string, enum: [cash, credit, partial] }
+        paidAmount: { type: number, minimum: 0 }
+        date: { type: string, format: date }
+      required: [customerId, productId, quantity, paymentMethod, paidAmount, date]
+    Payment:
+      type: object
+      properties:
+        id: { type: integer }
+        customerId: { type: integer }
+        customerName: { type: string }
+        amount: { type: number }
+        method: { type: string }
+        date: { type: string, format: date }
+        notes: { type: string }
+      required: [id, customerId, customerName, amount, method, date, notes]
+    PaymentInput:
+      type: object
+      properties:
+        customerId: { type: integer }
+        amount: { type: number, exclusiveMinimum: 0 }
+        method: { type: string }
+        date: { type: string, format: date }
+        notes: { type: string }
+      required: [customerId, amount, method, date]
+    Expense:
+      type: object
+      properties:
+        id: { type: integer }
+        category: { type: string }
+        amount: { type: number }
+        date: { type: string, format: date }
+        paymentMethod: { type: string }
+        description: { type: string }
+      required: [id, category, amount, date, paymentMethod, description]
+    ExpenseInput:
+      type: object
+      properties:
+        category: { type: string, minLength: 1 }
+        amount: { type: number, exclusiveMinimum: 0 }
+        date: { type: string, format: date }
+        paymentMethod: { type: string }
+        description: { type: string }
+      required: [category, amount, date, paymentMethod]
+    StockMovement:
+      type: object
+      properties:
+        id: { type: integer }
+        itemType: { type: string }
+        itemName: { type: string }
+        quantityIn: { type: number }
+        quantityOut: { type: number }
+        unit: { type: string }
+        transactionType: { type: string }
+        referenceId: { type: integer }
+        date: { type: string, format: date-time }
+        notes: { type: string }
+      required: [id, itemType, itemName, quantityIn, quantityOut, unit, transactionType, referenceId, date, notes]
+    ProfitLoss:
+      type: object
+      properties:
+        revenue: { type: number }
+        cogs: { type: number }
+        grossProfit: { type: number }
+        grossMargin: { type: number }
+        expenses: { type: number }
+        netProfit: { type: number }
+        netMargin: { type: number }
+        from: { type: string, format: date }
+        to: { type: string, format: date }
+      required: [revenue, cogs, grossProfit, grossMargin, expenses, netProfit, netMargin, from, to]
+    Activity:
+      type: object
+      properties:
+        type: { type: string }
+        label: { type: string }
+        amount: { type: number }
+        date: { type: string, format: date-time }
+      required: [type, label, amount, date]
