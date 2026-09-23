@@ -19,6 +19,7 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary Get dashboard summary
  */
+
 export const getDashboardResponseLowStockProductsItemBomItemQuantityExclusiveMin = 0;
 
 
@@ -44,6 +45,7 @@ export const GetDashboardResponse = zod.object({
   "minimumStock": zod.number(),
   "currentStock": zod.number(),
   "averageCost": zod.number(),
+  "packagingBottles": zod.number().int().min(1).describe('Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.'),
   "active": zod.boolean()
 })),
   "lowStockProducts": zod.array(zod.object({
@@ -81,6 +83,9 @@ export const GetMaterialsQueryParams = zod.object({
   "active": zod.coerce.boolean().optional()
 })
 
+
+
+
 export const GetMaterialsResponseItem = zod.object({
   "id": zod.number().int(),
   "name": zod.string(),
@@ -91,6 +96,7 @@ export const GetMaterialsResponseItem = zod.object({
   "minimumStock": zod.number(),
   "currentStock": zod.number(),
   "averageCost": zod.number(),
+  "packagingBottles": zod.number().int().min(1).describe('Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.'),
   "active": zod.boolean()
 })
 export const GetMaterialsResponse = zod.array(GetMaterialsResponseItem)
@@ -109,6 +115,7 @@ export const createMaterialBodyMinimumStockMin = 0;
 
 
 
+
 export const CreateMaterialBody = zod.object({
   "name": zod.string().min(1),
   "category": zod.string().min(1),
@@ -116,8 +123,12 @@ export const CreateMaterialBody = zod.object({
   "baseUnit": zod.string().min(1),
   "conversionFactor": zod.number().gt(createMaterialBodyConversionFactorExclusiveMin),
   "minimumStock": zod.number().min(createMaterialBodyMinimumStockMin),
+  "packagingBottles": zod.number().int().min(1).optional().describe('Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.'),
   "active": zod.boolean().optional()
 })
+
+
+
 
 export const CreateMaterialResponse = zod.object({
   "id": zod.number().int(),
@@ -129,6 +140,7 @@ export const CreateMaterialResponse = zod.object({
   "minimumStock": zod.number(),
   "currentStock": zod.number(),
   "averageCost": zod.number(),
+  "packagingBottles": zod.number().int().min(1).describe('Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.'),
   "active": zod.boolean()
 })
 

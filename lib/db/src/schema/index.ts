@@ -2,8 +2,8 @@ import {
   boolean,
   date,
   integer,
+  numeric,
   pgTable,
-  real,
   serial,
   text,
   timestamp,
@@ -11,15 +11,19 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
+// NUMERIC(20,6) provides six decimal places for exact money and stock values.
+// Legacy REAL values are converted without intentional business-data changes,
+// but binary floating-point representation cannot be recovered exactly.
 export const materialsTable = pgTable("materials", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   category: text("category").notNull(),
   purchaseUnit: text("purchase_unit").notNull(),
   baseUnit: text("base_unit").notNull(),
-  conversionFactor: real("conversion_factor").notNull().default(1),
-  minimumStock: real("minimum_stock").notNull().default(0),
-  averageCost: real("average_cost").notNull().default(0),
+  conversionFactor: numeric("conversion_factor", { precision: 20, scale: 6 }).notNull().default("1"),
+  minimumStock: numeric("minimum_stock", { precision: 20, scale: 6 }).notNull().default("0"),
+  averageCost: numeric("average_cost", { precision: 20, scale: 6 }).notNull().default("0"),
+  packagingBottles: integer("packaging_bottles").notNull().default(1),
   active: boolean("active").notNull().default(true),
 });
 
@@ -28,7 +32,7 @@ export const suppliersTable = pgTable("suppliers", {
   name: text("name").notNull(),
   phone: text("phone").notNull().default(""),
   address: text("address").notNull().default(""),
-  openingBalance: real("opening_balance").notNull().default(0),
+  openingBalance: numeric("opening_balance", { precision: 20, scale: 6 }).notNull().default("0"),
   paymentTerms: text("payment_terms").notNull().default("Due on receipt"),
   active: boolean("active").notNull().default(true),
 });
@@ -38,8 +42,8 @@ export const customersTable = pgTable("customers", {
   name: text("name").notNull(),
   phone: text("phone").notNull().default(""),
   address: text("address").notNull().default(""),
-  openingBalance: real("opening_balance").notNull().default(0),
-  creditLimit: real("credit_limit").notNull().default(0),
+  openingBalance: numeric("opening_balance", { precision: 20, scale: 6 }).notNull().default("0"),
+  creditLimit: numeric("credit_limit", { precision: 20, scale: 6 }).notNull().default("0"),
   active: boolean("active").notNull().default(true),
 });
 
@@ -48,10 +52,10 @@ export const productsTable = pgTable("products", {
   sku: text("sku").notNull().unique(),
   name: text("name").notNull(),
   colour: text("colour").notNull().default(""),
-  bottleSize: real("bottle_size").notNull(),
-  sellingPrice: real("selling_price").notNull().default(0),
+  bottleSize: numeric("bottle_size", { precision: 20, scale: 6 }).notNull(),
+  sellingPrice: numeric("selling_price", { precision: 20, scale: 6 }).notNull().default("0"),
   minimumStock: integer("minimum_stock").notNull().default(0),
-  averageCost: real("average_cost").notNull().default(0),
+  averageCost: numeric("average_cost", { precision: 20, scale: 6 }).notNull().default("0"),
   active: boolean("active").notNull().default(true),
 });
 
@@ -59,18 +63,18 @@ export const productBomTable = pgTable("product_bom", {
   id: serial("id").primaryKey(),
   productId: integer("product_id").notNull().references(() => productsTable.id),
   materialId: integer("material_id").notNull().references(() => materialsTable.id),
-  quantity: real("quantity").notNull(),
+  quantity: numeric("quantity", { precision: 20, scale: 6 }).notNull(),
 });
 
 export const purchasesTable = pgTable("purchases", {
   id: serial("id").primaryKey(),
   supplierId: integer("supplier_id").notNull().references(() => suppliersTable.id),
   materialId: integer("material_id").notNull().references(() => materialsTable.id),
-  quantity: real("quantity").notNull(),
+  quantity: numeric("quantity", { precision: 20, scale: 6 }).notNull(),
   unit: text("unit").notNull(),
-  baseQuantity: real("base_quantity").notNull(),
-  price: real("price").notNull(),
-  total: real("total").notNull(),
+  baseQuantity: numeric("base_quantity", { precision: 20, scale: 6 }).notNull(),
+  price: numeric("price", { precision: 20, scale: 6 }).notNull(),
+  total: numeric("total", { precision: 20, scale: 6 }).notNull(),
   date: date("date", { mode: "string" }).notNull(),
   invoiceNumber: text("invoice_number").notNull().default(""),
   notes: text("notes").notNull().default(""),
@@ -80,8 +84,8 @@ export const productionTable = pgTable("production", {
   id: serial("id").primaryKey(),
   productId: integer("product_id").notNull().references(() => productsTable.id),
   quantity: integer("quantity").notNull(),
-  unitCost: real("unit_cost").notNull(),
-  totalCost: real("total_cost").notNull(),
+  unitCost: numeric("unit_cost", { precision: 20, scale: 6 }).notNull(),
+  totalCost: numeric("total_cost", { precision: 20, scale: 6 }).notNull(),
   date: date("date", { mode: "string" }).notNull(),
 });
 
@@ -90,20 +94,20 @@ export const salesTable = pgTable("sales", {
   customerId: integer("customer_id").notNull().references(() => customersTable.id),
   productId: integer("product_id").notNull().references(() => productsTable.id),
   quantity: integer("quantity").notNull(),
-  sellingPrice: real("selling_price").notNull(),
-  revenue: real("revenue").notNull(),
-  cogs: real("cogs").notNull(),
-  grossProfit: real("gross_profit").notNull(),
+  sellingPrice: numeric("selling_price", { precision: 20, scale: 6 }).notNull(),
+  revenue: numeric("revenue", { precision: 20, scale: 6 }).notNull(),
+  cogs: numeric("cogs", { precision: 20, scale: 6 }).notNull(),
+  grossProfit: numeric("gross_profit", { precision: 20, scale: 6 }).notNull(),
   paymentMethod: text("payment_method").notNull(),
-  paidAmount: real("paid_amount").notNull().default(0),
-  balanceDue: real("balance_due").notNull().default(0),
+  paidAmount: numeric("paid_amount", { precision: 20, scale: 6 }).notNull().default("0"),
+  balanceDue: numeric("balance_due", { precision: 20, scale: 6 }).notNull().default("0"),
   date: date("date", { mode: "string" }).notNull(),
 });
 
 export const paymentsTable = pgTable("payments", {
   id: serial("id").primaryKey(),
   customerId: integer("customer_id").notNull().references(() => customersTable.id),
-  amount: real("amount").notNull(),
+  amount: numeric("amount", { precision: 20, scale: 6 }).notNull(),
   method: text("method").notNull(),
   date: date("date", { mode: "string" }).notNull(),
   notes: text("notes").notNull().default(""),
@@ -112,7 +116,7 @@ export const paymentsTable = pgTable("payments", {
 export const expensesTable = pgTable("expenses", {
   id: serial("id").primaryKey(),
   category: text("category").notNull(),
-  amount: real("amount").notNull(),
+  amount: numeric("amount", { precision: 20, scale: 6 }).notNull(),
   date: date("date", { mode: "string" }).notNull(),
   paymentMethod: text("payment_method").notNull(),
   description: text("description").notNull().default(""),
@@ -123,8 +127,8 @@ export const stockTransactionsTable = pgTable("stock_transactions", {
   itemType: text("item_type").notNull(),
   materialId: integer("material_id").references(() => materialsTable.id),
   productId: integer("product_id").references(() => productsTable.id),
-  quantityIn: real("quantity_in").notNull().default(0),
-  quantityOut: real("quantity_out").notNull().default(0),
+  quantityIn: numeric("quantity_in", { precision: 20, scale: 6 }).notNull().default("0"),
+  quantityOut: numeric("quantity_out", { precision: 20, scale: 6 }).notNull().default("0"),
   unit: text("unit").notNull(),
   transactionType: text("transaction_type").notNull(),
   referenceId: integer("reference_id").notNull(),
