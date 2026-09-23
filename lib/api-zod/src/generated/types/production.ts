@@ -5,6 +5,7 @@
  * Nail Business Manager API
  * OpenAPI spec version: 0.1.0
  */
+import type { ProductionStatus } from './productionStatus';
 
 export interface Production {
   id: number;
@@ -14,4 +15,8 @@ export interface Production {
   unitCost: number;
   totalCost: number;
   date: Date;
+  status: ProductionStatus;
+  cancelledAt?: Date | null;
+  reversalReason?: string | null;
+  reversalOfId?: number | null;
 }

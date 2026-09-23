@@ -205,7 +205,11 @@ export const GetPurchasesResponseItem = zod.object({
   "total": zod.number(),
   "date": zod.coerce.date(),
   "invoiceNumber": zod.string(),
-  "notes": zod.string()
+  "notes": zod.string(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
 })
 export const GetPurchasesResponse = zod.array(GetPurchasesResponseItem)
 
@@ -219,12 +223,14 @@ export const createPurchaseBodyPriceMin = 0;
 
 
 
+
 export const CreatePurchaseBody = zod.object({
   "supplierId": zod.number().int(),
   "materialId": zod.number().int(),
   "quantity": zod.number().gt(createPurchaseBodyQuantityExclusiveMin),
   "price": zod.number().min(createPurchaseBodyPriceMin),
   "date": zod.coerce.date(),
+  "reason": zod.string().min(1).optional().describe('Optional replacement reason; cancellation always requires a reason.'),
   "invoiceNumber": zod.string().optional(),
   "notes": zod.string().optional()
 })
@@ -242,7 +248,60 @@ export const CreatePurchaseResponse = zod.object({
   "total": zod.number(),
   "date": zod.coerce.date(),
   "invoiceNumber": zod.string(),
-  "notes": zod.string()
+  "notes": zod.string(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const UpdatePurchaseParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const updatePurchaseBodyQuantityExclusiveMin = 0;
+
+export const updatePurchaseBodyPriceMin = 0;
+
+
+
+
+export const UpdatePurchaseBody = zod.object({
+  "supplierId": zod.number().int(),
+  "materialId": zod.number().int(),
+  "quantity": zod.number().gt(updatePurchaseBodyQuantityExclusiveMin),
+  "price": zod.number().min(updatePurchaseBodyPriceMin),
+  "date": zod.coerce.date(),
+  "reason": zod.string().min(1).optional().describe('Optional replacement reason; cancellation always requires a reason.'),
+  "invoiceNumber": zod.string().optional(),
+  "notes": zod.string().optional()
+})
+
+export const UpdatePurchaseResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const CancelPurchaseParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+
+
+
+export const CancelPurchaseBody = zod.object({
+  "reason": zod.string().min(1)
+})
+
+export const CancelPurchaseResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
 })
 
 
@@ -401,7 +460,11 @@ export const GetProductionsResponseItem = zod.object({
   "quantity": zod.number().int(),
   "unitCost": zod.number(),
   "totalCost": zod.number(),
-  "date": zod.coerce.date()
+  "date": zod.coerce.date(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
 })
 export const GetProductionsResponse = zod.array(GetProductionsResponseItem)
 
@@ -426,7 +489,52 @@ export const CreateProductionResponse = zod.object({
   "quantity": zod.number().int(),
   "unitCost": zod.number(),
   "totalCost": zod.number(),
+  "date": zod.coerce.date(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const UpdateProductionParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const updateProductionBodyQuantityExclusiveMin = 0;
+
+
+
+export const UpdateProductionBody = zod.object({
+  "productId": zod.number().int(),
+  "quantity": zod.number().int().gt(updateProductionBodyQuantityExclusiveMin),
   "date": zod.coerce.date()
+})
+
+export const UpdateProductionResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const CancelProductionParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+
+
+
+export const CancelProductionBody = zod.object({
+  "reason": zod.string().min(1)
+})
+
+export const CancelProductionResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
 })
 
 
@@ -493,7 +601,11 @@ export const GetSalesResponseItem = zod.object({
   "paymentMethod": zod.string(),
   "paidAmount": zod.number(),
   "balanceDue": zod.number(),
-  "date": zod.coerce.date()
+  "date": zod.coerce.date(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
 })
 export const GetSalesResponse = zod.array(GetSalesResponseItem)
 
@@ -533,8 +645,80 @@ export const CreateSaleResponse = zod.object({
   "paymentMethod": zod.string(),
   "paidAmount": zod.number(),
   "balanceDue": zod.number(),
+  "date": zod.coerce.date(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const UpdateSaleParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const updateSaleBodyQuantityExclusiveMin = 0;
+
+export const updateSaleBodySellingPriceMin = 0;
+
+export const updateSaleBodyPaidAmountMin = 0;
+
+
+
+export const UpdateSaleBody = zod.object({
+  "customerId": zod.number().int(),
+  "productId": zod.number().int(),
+  "quantity": zod.number().int().gt(updateSaleBodyQuantityExclusiveMin),
+  "sellingPrice": zod.number().min(updateSaleBodySellingPriceMin).optional(),
+  "paymentMethod": zod.enum(['cash', 'credit', 'partial']),
+  "paidAmount": zod.number().min(updateSaleBodyPaidAmountMin),
   "date": zod.coerce.date()
 })
+
+export const UpdateSaleResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const CancelSaleParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+
+
+
+export const CancelSaleBody = zod.object({
+  "reason": zod.string().min(1)
+})
+
+export const CancelSaleResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+/**
+ * @summary List customer payments
+ */
+export const GetPaymentsResponseItem = zod.object({
+  "id": zod.number().int(),
+  "customerId": zod.number().int(),
+  "customerName": zod.string(),
+  "amount": zod.number(),
+  "method": zod.string(),
+  "date": zod.coerce.date(),
+  "notes": zod.string(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
+})
+export const GetPaymentsResponse = zod.array(GetPaymentsResponseItem)
 
 
 /**
@@ -559,7 +743,54 @@ export const CreatePaymentResponse = zod.object({
   "amount": zod.number(),
   "method": zod.string(),
   "date": zod.coerce.date(),
-  "notes": zod.string()
+  "notes": zod.string(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const UpdatePaymentParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const updatePaymentBodyAmountExclusiveMin = 0;
+
+
+
+export const UpdatePaymentBody = zod.object({
+  "customerId": zod.number().int(),
+  "amount": zod.number().gt(updatePaymentBodyAmountExclusiveMin),
+  "method": zod.string(),
+  "date": zod.coerce.date(),
+  "notes": zod.string().optional()
+})
+
+export const UpdatePaymentResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const CancelPaymentParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+
+
+
+export const CancelPaymentBody = zod.object({
+  "reason": zod.string().min(1)
+})
+
+export const CancelPaymentResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
 })
 
 
@@ -572,7 +803,11 @@ export const GetExpensesResponseItem = zod.object({
   "amount": zod.number(),
   "date": zod.coerce.date(),
   "paymentMethod": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
 })
 export const GetExpensesResponse = zod.array(GetExpensesResponseItem)
 
@@ -599,7 +834,55 @@ export const CreateExpenseResponse = zod.object({
   "amount": zod.number(),
   "date": zod.coerce.date(),
   "paymentMethod": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "cancelledAt": zod.coerce.date().nullish(),
+  "reversalReason": zod.string().nullish(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const UpdateExpenseParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+
+export const updateExpenseBodyAmountExclusiveMin = 0;
+
+
+
+export const UpdateExpenseBody = zod.object({
+  "category": zod.string().min(1),
+  "amount": zod.number().gt(updateExpenseBodyAmountExclusiveMin),
+  "date": zod.coerce.date(),
+  "paymentMethod": zod.string(),
+  "description": zod.string().optional()
+})
+
+export const UpdateExpenseResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
+})
+
+
+export const CancelExpenseParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+
+
+
+export const CancelExpenseBody = zod.object({
+  "reason": zod.string().min(1)
+})
+
+export const CancelExpenseResponse = zod.object({
+  "id": zod.number().int(),
+  "status": zod.enum(['completed', 'cancelled', 'reversed']),
+  "reason": zod.string().optional(),
+  "reversalOfId": zod.number().int().nullish()
 })
 
 

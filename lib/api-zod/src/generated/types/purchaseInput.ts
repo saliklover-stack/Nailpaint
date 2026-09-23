@@ -14,6 +14,11 @@ export interface PurchaseInput {
   /** @minimum 0 */
   price: number;
   date: Date;
+  /**
+     * Optional replacement reason; cancellation always requires a reason.
+     * @minLength 1
+     */
+  reason?: string;
   invoiceNumber?: string;
   notes?: string;
 }

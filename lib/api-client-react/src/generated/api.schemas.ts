@@ -114,6 +114,15 @@ export interface SupplierInput {
   paymentTerms?: string;
 }
 
+export type PurchaseStatus = typeof PurchaseStatus[keyof typeof PurchaseStatus];
+
+
+export const PurchaseStatus = {
+  completed: 'completed',
+  cancelled: 'cancelled',
+  reversed: 'reversed',
+} as const;
+
 export interface Purchase {
   id: number;
   supplierId: number;
@@ -128,6 +137,10 @@ export interface Purchase {
   date: string;
   invoiceNumber: string;
   notes: string;
+  status: PurchaseStatus;
+  cancelledAt?: string | null;
+  reversalReason?: string | null;
+  reversalOfId?: number | null;
 }
 
 export interface PurchaseInput {
@@ -138,6 +151,11 @@ export interface PurchaseInput {
   /** @minimum 0 */
   price: number;
   date: string;
+  /**
+     * Optional replacement reason; cancellation always requires a reason.
+     * @minLength 1
+     */
+  reason?: string;
   invoiceNumber?: string;
   notes?: string;
 }
@@ -190,6 +208,15 @@ export interface ProductionCheck {
   requirements: Requirement[];
 }
 
+export type ProductionStatus = typeof ProductionStatus[keyof typeof ProductionStatus];
+
+
+export const ProductionStatus = {
+  completed: 'completed',
+  cancelled: 'cancelled',
+  reversed: 'reversed',
+} as const;
+
 export interface Production {
   id: number;
   productId: number;
@@ -198,6 +225,10 @@ export interface Production {
   unitCost: number;
   totalCost: number;
   date: string;
+  status: ProductionStatus;
+  cancelledAt?: string | null;
+  reversalReason?: string | null;
+  reversalOfId?: number | null;
 }
 
 export interface Customer {
@@ -222,6 +253,15 @@ export interface CustomerInput {
   creditLimit: number;
 }
 
+export type SaleStatus = typeof SaleStatus[keyof typeof SaleStatus];
+
+
+export const SaleStatus = {
+  completed: 'completed',
+  cancelled: 'cancelled',
+  reversed: 'reversed',
+} as const;
+
 export interface Sale {
   id: number;
   customerId: number;
@@ -237,6 +277,10 @@ export interface Sale {
   paidAmount: number;
   balanceDue: number;
   date: string;
+  status: SaleStatus;
+  cancelledAt?: string | null;
+  reversalReason?: string | null;
+  reversalOfId?: number | null;
 }
 
 export type SaleInputPaymentMethod = typeof SaleInputPaymentMethod[keyof typeof SaleInputPaymentMethod];
@@ -261,6 +305,15 @@ export interface SaleInput {
   date: string;
 }
 
+export type PaymentStatus = typeof PaymentStatus[keyof typeof PaymentStatus];
+
+
+export const PaymentStatus = {
+  completed: 'completed',
+  cancelled: 'cancelled',
+  reversed: 'reversed',
+} as const;
+
 export interface Payment {
   id: number;
   customerId: number;
@@ -269,6 +322,10 @@ export interface Payment {
   method: string;
   date: string;
   notes: string;
+  status: PaymentStatus;
+  cancelledAt?: string | null;
+  reversalReason?: string | null;
+  reversalOfId?: number | null;
 }
 
 export interface PaymentInput {
@@ -280,6 +337,15 @@ export interface PaymentInput {
   notes?: string;
 }
 
+export type ExpenseStatus = typeof ExpenseStatus[keyof typeof ExpenseStatus];
+
+
+export const ExpenseStatus = {
+  completed: 'completed',
+  cancelled: 'cancelled',
+  reversed: 'reversed',
+} as const;
+
 export interface Expense {
   id: number;
   category: string;
@@ -287,6 +353,10 @@ export interface Expense {
   date: string;
   paymentMethod: string;
   description: string;
+  status: ExpenseStatus;
+  cancelledAt?: string | null;
+  reversalReason?: string | null;
+  reversalOfId?: number | null;
 }
 
 export interface ExpenseInput {
@@ -297,6 +367,27 @@ export interface ExpenseInput {
   date: string;
   paymentMethod: string;
   description?: string;
+}
+
+export interface TransactionActionInput {
+  /** @minLength 1 */
+  reason: string;
+}
+
+export type TransactionActionStatus = typeof TransactionActionStatus[keyof typeof TransactionActionStatus];
+
+
+export const TransactionActionStatus = {
+  completed: 'completed',
+  cancelled: 'cancelled',
+  reversed: 'reversed',
+} as const;
+
+export interface TransactionAction {
+  id: number;
+  status: TransactionActionStatus;
+  reason?: string;
+  reversalOfId?: number | null;
 }
 
 export interface StockMovement {

@@ -5,6 +5,7 @@
  * Nail Business Manager API
  * OpenAPI spec version: 0.1.0
  */
+import type { PaymentStatus } from './paymentStatus';
 
 export interface Payment {
   id: number;
@@ -14,4 +15,8 @@ export interface Payment {
   method: string;
   date: Date;
   notes: string;
+  status: PaymentStatus;
+  cancelledAt?: Date | null;
+  reversalReason?: string | null;
+  reversalOfId?: number | null;
 }

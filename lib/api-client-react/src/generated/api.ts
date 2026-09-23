@@ -46,7 +46,9 @@ import type {
   SaleInput,
   StockMovement,
   Supplier,
-  SupplierInput
+  SupplierInput,
+  TransactionAction,
+  TransactionActionInput
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -732,6 +734,172 @@ export const useCreatePurchase = <TError = ErrorType<unknown>,
       return useMutation(getCreatePurchaseMutationOptions(options));
     }
 
+export const getUpdatePurchaseUrl = (id: number,) => {
+
+
+
+
+  return `/api/purchases/${id}`
+}
+
+export const updatePurchase = async (id: number,
+    purchaseInput: PurchaseInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getUpdatePurchaseUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(purchaseInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePurchaseMutationKey = () => ['updatePurchase'] as const;
+
+export const getUpdatePurchaseMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePurchase>>, TError,UpdatePurchaseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePurchase>>, TError,UpdatePurchaseMutationVariables, TContext> => {
+
+const mutationKey = getUpdatePurchaseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePurchase>>, UpdatePurchaseMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePurchase(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePurchaseMutationResult = NonNullable<Awaited<ReturnType<typeof updatePurchase>>>
+    export type UpdatePurchaseMutationBody = BodyType<PurchaseInput>
+    export type UpdatePurchaseMutationError = ErrorType<unknown>
+    export type UpdatePurchaseMutationVariables = {id: number;data: BodyType<PurchaseInput>}
+
+    export const useUpdatePurchase = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePurchase>>, TError,UpdatePurchaseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePurchase>>,
+        TError,
+        UpdatePurchaseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdatePurchaseMutationOptions(options));
+    }
+
+export const getCancelPurchaseUrl = (id: number,) => {
+
+
+
+
+  return `/api/purchases/${id}/cancel`
+}
+
+export const cancelPurchase = async (id: number,
+    transactionActionInput: TransactionActionInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getCancelPurchaseUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(transactionActionInput)
+  }
+);}
+
+
+
+
+
+export const getCancelPurchaseMutationKey = () => ['cancelPurchase'] as const;
+
+export const getCancelPurchaseMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelPurchase>>, TError,CancelPurchaseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelPurchase>>, TError,CancelPurchaseMutationVariables, TContext> => {
+
+const mutationKey = getCancelPurchaseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelPurchase>>, CancelPurchaseMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  cancelPurchase(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelPurchaseMutationResult = NonNullable<Awaited<ReturnType<typeof cancelPurchase>>>
+    export type CancelPurchaseMutationBody = BodyType<TransactionActionInput>
+    export type CancelPurchaseMutationError = ErrorType<unknown>
+    export type CancelPurchaseMutationVariables = {id: number;data: BodyType<TransactionActionInput>}
+
+    export const useCancelPurchase = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelPurchase>>, TError,CancelPurchaseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelPurchase>>,
+        TError,
+        CancelPurchaseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelPurchaseMutationOptions(options));
+    }
+
 export const getGetProductsUrl = () => {
 
 
@@ -1239,6 +1407,172 @@ export const useCreateProduction = <TError = ErrorType<unknown>,
       return useMutation(getCreateProductionMutationOptions(options));
     }
 
+export const getUpdateProductionUrl = (id: number,) => {
+
+
+
+
+  return `/api/production/${id}`
+}
+
+export const updateProduction = async (id: number,
+    productionInput: ProductionInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getUpdateProductionUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(productionInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateProductionMutationKey = () => ['updateProduction'] as const;
+
+export const getUpdateProductionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProduction>>, TError,UpdateProductionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateProduction>>, TError,UpdateProductionMutationVariables, TContext> => {
+
+const mutationKey = getUpdateProductionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProduction>>, UpdateProductionMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateProduction(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateProductionMutationResult = NonNullable<Awaited<ReturnType<typeof updateProduction>>>
+    export type UpdateProductionMutationBody = BodyType<ProductionInput>
+    export type UpdateProductionMutationError = ErrorType<unknown>
+    export type UpdateProductionMutationVariables = {id: number;data: BodyType<ProductionInput>}
+
+    export const useUpdateProduction = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProduction>>, TError,UpdateProductionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateProduction>>,
+        TError,
+        UpdateProductionMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateProductionMutationOptions(options));
+    }
+
+export const getCancelProductionUrl = (id: number,) => {
+
+
+
+
+  return `/api/production/${id}/cancel`
+}
+
+export const cancelProduction = async (id: number,
+    transactionActionInput: TransactionActionInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getCancelProductionUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(transactionActionInput)
+  }
+);}
+
+
+
+
+
+export const getCancelProductionMutationKey = () => ['cancelProduction'] as const;
+
+export const getCancelProductionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelProduction>>, TError,CancelProductionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelProduction>>, TError,CancelProductionMutationVariables, TContext> => {
+
+const mutationKey = getCancelProductionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelProduction>>, CancelProductionMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  cancelProduction(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelProductionMutationResult = NonNullable<Awaited<ReturnType<typeof cancelProduction>>>
+    export type CancelProductionMutationBody = BodyType<TransactionActionInput>
+    export type CancelProductionMutationError = ErrorType<unknown>
+    export type CancelProductionMutationVariables = {id: number;data: BodyType<TransactionActionInput>}
+
+    export const useCancelProduction = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelProduction>>, TError,CancelProductionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelProduction>>,
+        TError,
+        CancelProductionMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelProductionMutationOptions(options));
+    }
+
 export const getGetCustomersUrl = () => {
 
 
@@ -1569,6 +1903,249 @@ export const useCreateSale = <TError = ErrorType<unknown>,
       return useMutation(getCreateSaleMutationOptions(options));
     }
 
+export const getUpdateSaleUrl = (id: number,) => {
+
+
+
+
+  return `/api/sales/${id}`
+}
+
+export const updateSale = async (id: number,
+    saleInput: SaleInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getUpdateSaleUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(saleInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateSaleMutationKey = () => ['updateSale'] as const;
+
+export const getUpdateSaleMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSale>>, TError,UpdateSaleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateSale>>, TError,UpdateSaleMutationVariables, TContext> => {
+
+const mutationKey = getUpdateSaleMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSale>>, UpdateSaleMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateSale(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateSaleMutationResult = NonNullable<Awaited<ReturnType<typeof updateSale>>>
+    export type UpdateSaleMutationBody = BodyType<SaleInput>
+    export type UpdateSaleMutationError = ErrorType<unknown>
+    export type UpdateSaleMutationVariables = {id: number;data: BodyType<SaleInput>}
+
+    export const useUpdateSale = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSale>>, TError,UpdateSaleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateSale>>,
+        TError,
+        UpdateSaleMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateSaleMutationOptions(options));
+    }
+
+export const getCancelSaleUrl = (id: number,) => {
+
+
+
+
+  return `/api/sales/${id}/cancel`
+}
+
+export const cancelSale = async (id: number,
+    transactionActionInput: TransactionActionInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getCancelSaleUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(transactionActionInput)
+  }
+);}
+
+
+
+
+
+export const getCancelSaleMutationKey = () => ['cancelSale'] as const;
+
+export const getCancelSaleMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelSale>>, TError,CancelSaleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelSale>>, TError,CancelSaleMutationVariables, TContext> => {
+
+const mutationKey = getCancelSaleMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelSale>>, CancelSaleMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  cancelSale(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelSaleMutationResult = NonNullable<Awaited<ReturnType<typeof cancelSale>>>
+    export type CancelSaleMutationBody = BodyType<TransactionActionInput>
+    export type CancelSaleMutationError = ErrorType<unknown>
+    export type CancelSaleMutationVariables = {id: number;data: BodyType<TransactionActionInput>}
+
+    export const useCancelSale = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelSale>>, TError,CancelSaleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelSale>>,
+        TError,
+        CancelSaleMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelSaleMutationOptions(options));
+    }
+
+export const getGetPaymentsUrl = () => {
+
+
+
+
+  return `/api/payments`
+}
+
+/**
+ * @summary List customer payments
+ */
+export const getPayments = async ( options?: Parameters<typeof customFetch>[1]): Promise<Payment[]> => {
+
+  return customFetch<Payment[]>(getGetPaymentsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPaymentsQueryKey = () => {
+    return [
+    `/api/payments`
+    ] as const;
+    }
+
+
+export const getGetPaymentsQueryOptions = <TData = Awaited<ReturnType<typeof getPayments>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPaymentsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPayments>>> = ({ signal }) => getPayments({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPaymentsQueryResult = NonNullable<Awaited<ReturnType<typeof getPayments>>>
+export type GetPaymentsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List customer payments
+ */
+
+export function useGetPayments<TData = Awaited<ReturnType<typeof getPayments>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPaymentsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
 export const getCreatePaymentUrl = () => {
 
 
@@ -1655,6 +2232,172 @@ export const useCreatePayment = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getCreatePaymentMutationOptions(options));
+    }
+
+export const getUpdatePaymentUrl = (id: number,) => {
+
+
+
+
+  return `/api/payments/${id}`
+}
+
+export const updatePayment = async (id: number,
+    paymentInput: PaymentInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getUpdatePaymentUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(paymentInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePaymentMutationKey = () => ['updatePayment'] as const;
+
+export const getUpdatePaymentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePayment>>, TError,UpdatePaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePayment>>, TError,UpdatePaymentMutationVariables, TContext> => {
+
+const mutationKey = getUpdatePaymentMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePayment>>, UpdatePaymentMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePayment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePaymentMutationResult = NonNullable<Awaited<ReturnType<typeof updatePayment>>>
+    export type UpdatePaymentMutationBody = BodyType<PaymentInput>
+    export type UpdatePaymentMutationError = ErrorType<unknown>
+    export type UpdatePaymentMutationVariables = {id: number;data: BodyType<PaymentInput>}
+
+    export const useUpdatePayment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePayment>>, TError,UpdatePaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePayment>>,
+        TError,
+        UpdatePaymentMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdatePaymentMutationOptions(options));
+    }
+
+export const getCancelPaymentUrl = (id: number,) => {
+
+
+
+
+  return `/api/payments/${id}/cancel`
+}
+
+export const cancelPayment = async (id: number,
+    transactionActionInput: TransactionActionInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getCancelPaymentUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(transactionActionInput)
+  }
+);}
+
+
+
+
+
+export const getCancelPaymentMutationKey = () => ['cancelPayment'] as const;
+
+export const getCancelPaymentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelPayment>>, TError,CancelPaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelPayment>>, TError,CancelPaymentMutationVariables, TContext> => {
+
+const mutationKey = getCancelPaymentMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelPayment>>, CancelPaymentMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  cancelPayment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof cancelPayment>>>
+    export type CancelPaymentMutationBody = BodyType<TransactionActionInput>
+    export type CancelPaymentMutationError = ErrorType<unknown>
+    export type CancelPaymentMutationVariables = {id: number;data: BodyType<TransactionActionInput>}
+
+    export const useCancelPayment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelPayment>>, TError,CancelPaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelPayment>>,
+        TError,
+        CancelPaymentMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelPaymentMutationOptions(options));
     }
 
 export const getGetExpensesUrl = () => {
@@ -1820,6 +2563,172 @@ export const useCreateExpense = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getCreateExpenseMutationOptions(options));
+    }
+
+export const getUpdateExpenseUrl = (id: number,) => {
+
+
+
+
+  return `/api/expenses/${id}`
+}
+
+export const updateExpense = async (id: number,
+    expenseInput: ExpenseInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getUpdateExpenseUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(expenseInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateExpenseMutationKey = () => ['updateExpense'] as const;
+
+export const getUpdateExpenseMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateExpense>>, TError,UpdateExpenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateExpense>>, TError,UpdateExpenseMutationVariables, TContext> => {
+
+const mutationKey = getUpdateExpenseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateExpense>>, UpdateExpenseMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateExpense(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateExpenseMutationResult = NonNullable<Awaited<ReturnType<typeof updateExpense>>>
+    export type UpdateExpenseMutationBody = BodyType<ExpenseInput>
+    export type UpdateExpenseMutationError = ErrorType<unknown>
+    export type UpdateExpenseMutationVariables = {id: number;data: BodyType<ExpenseInput>}
+
+    export const useUpdateExpense = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateExpense>>, TError,UpdateExpenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateExpense>>,
+        TError,
+        UpdateExpenseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateExpenseMutationOptions(options));
+    }
+
+export const getCancelExpenseUrl = (id: number,) => {
+
+
+
+
+  return `/api/expenses/${id}/cancel`
+}
+
+export const cancelExpense = async (id: number,
+    transactionActionInput: TransactionActionInput, options?: Parameters<typeof customFetch>[1]): Promise<TransactionAction> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<TransactionAction>(getCancelExpenseUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(transactionActionInput)
+  }
+);}
+
+
+
+
+
+export const getCancelExpenseMutationKey = () => ['cancelExpense'] as const;
+
+export const getCancelExpenseMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelExpense>>, TError,CancelExpenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelExpense>>, TError,CancelExpenseMutationVariables, TContext> => {
+
+const mutationKey = getCancelExpenseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelExpense>>, CancelExpenseMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  cancelExpense(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelExpenseMutationResult = NonNullable<Awaited<ReturnType<typeof cancelExpense>>>
+    export type CancelExpenseMutationBody = BodyType<TransactionActionInput>
+    export type CancelExpenseMutationError = ErrorType<unknown>
+    export type CancelExpenseMutationVariables = {id: number;data: BodyType<TransactionActionInput>}
+
+    export const useCancelExpense = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelExpense>>, TError,CancelExpenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelExpense>>,
+        TError,
+        CancelExpenseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelExpenseMutationOptions(options));
     }
 
 export const getGetStockLedgerUrl = (params?: GetStockLedgerParams,) => {

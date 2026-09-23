@@ -141,6 +141,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Purchase"
+  /purchases/{id}:
+    put:
+      operationId: updatePurchase
+      tags: [purchases]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PurchaseInput" }
+      responses:
+        "200":
+          description: Replacement purchase
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
+  /purchases/{id}/cancel:
+    post:
+      operationId: cancelPurchase
+      tags: [purchases]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/TransactionActionInput" } } }
+      responses:
+        "200":
+          description: Cancelled purchase
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
   /products:
     get:
       operationId: getProducts
@@ -241,6 +267,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Production"
+  /production/{id}:
+    put:
+      operationId: updateProduction
+      tags: [production]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/ProductionInput" } } }
+      responses:
+        "200":
+          description: Replacement production
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
+  /production/{id}/cancel:
+    post:
+      operationId: cancelProduction
+      tags: [production]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/TransactionActionInput" } } }
+      responses:
+        "200":
+          description: Cancelled production
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
   /customers:
     get:
       operationId: getCustomers
@@ -303,7 +353,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Sale"
+  /sales/{id}:
+    put:
+      operationId: updateSale
+      tags: [sales]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/SaleInput" } } }
+      responses:
+        "200":
+          description: Replacement sale
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
+  /sales/{id}/cancel:
+    post:
+      operationId: cancelSale
+      tags: [sales]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/TransactionActionInput" } } }
+      responses:
+        "200":
+          description: Cancelled sale
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
   /payments:
+    get:
+      operationId: getPayments
+      tags: [payments]
+      summary: List customer payments
+      responses:
+        "200":
+          description: Customer payment history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
     post:
       operationId: createPayment
       tags: [payments]
@@ -321,6 +408,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Payment"
+  /payments/{id}:
+    put:
+      operationId: updatePayment
+      tags: [payments]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/PaymentInput" } } }
+      responses:
+        "200":
+          description: Replacement payment
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
+  /payments/{id}/cancel:
+    post:
+      operationId: cancelPayment
+      tags: [payments]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/TransactionActionInput" } } }
+      responses:
+        "200":
+          description: Cancelled payment
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
   /expenses:
     get:
       operationId: getExpenses
@@ -352,6 +463,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Expense"
+  /expenses/{id}:
+    put:
+      operationId: updateExpense
+      tags: [expenses]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/ExpenseInput" } } }
+      responses:
+        "200":
+          description: Replacement expense
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
+  /expenses/{id}/cancel:
+    post:
+      operationId: cancelExpense
+      tags: [expenses]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/TransactionActionInput" } } }
+      responses:
+        "200":
+          description: Cancelled expense
+          content: { application/json: { schema: { $ref: "#/components/schemas/TransactionAction" } } }
   /stock-ledger:
     get:
       operationId: getStockLedger
@@ -516,7 +651,11 @@ components:
         date: { type: string, format: date }
         invoiceNumber: { type: string }
         notes: { type: string }
-      required: [id, supplierId, supplierName, materialId, materialName, quantity, unit, baseQuantity, price, total, date, invoiceNumber, notes]
+        status: { type: string, enum: [completed, cancelled, reversed] }
+        cancelledAt: { type: string, format: date-time, nullable: true }
+        reversalReason: { type: string, nullable: true }
+        reversalOfId: { type: integer, nullable: true }
+      required: [id, supplierId, supplierName, materialId, materialName, quantity, unit, baseQuantity, price, total, date, invoiceNumber, notes, status]
     PurchaseInput:
       type: object
       properties:
@@ -525,6 +664,7 @@ components:
         quantity: { type: number, exclusiveMinimum: 0 }
         price: { type: number, minimum: 0 }
         date: { type: string, format: date }
+        reason: { type: string, minLength: 1, description: Optional replacement reason; cancellation always requires a reason. }
         invoiceNumber: { type: string }
         notes: { type: string }
       required: [supplierId, materialId, quantity, price, date]
@@ -614,7 +754,11 @@ components:
         unitCost: { type: number }
         totalCost: { type: number }
         date: { type: string, format: date }
-      required: [id, productId, productName, quantity, unitCost, totalCost, date]
+        status: { type: string, enum: [completed, cancelled, reversed] }
+        cancelledAt: { type: string, format: date-time, nullable: true }
+        reversalReason: { type: string, nullable: true }
+        reversalOfId: { type: integer, nullable: true }
+      required: [id, productId, productName, quantity, unitCost, totalCost, date, status]
     Customer:
       type: object
       properties:
@@ -653,7 +797,11 @@ components:
         paidAmount: { type: number }
         balanceDue: { type: number }
         date: { type: string, format: date }
-      required: [id, customerId, customerName, productId, productName, quantity, sellingPrice, revenue, cogs, grossProfit, paymentMethod, paidAmount, balanceDue, date]
+        status: { type: string, enum: [completed, cancelled, reversed] }
+        cancelledAt: { type: string, format: date-time, nullable: true }
+        reversalReason: { type: string, nullable: true }
+        reversalOfId: { type: integer, nullable: true }
+      required: [id, customerId, customerName, productId, productName, quantity, sellingPrice, revenue, cogs, grossProfit, paymentMethod, paidAmount, balanceDue, date, status]
     SaleInput:
       type: object
       properties:
@@ -675,7 +823,11 @@ components:
         method: { type: string }
         date: { type: string, format: date }
         notes: { type: string }
-      required: [id, customerId, customerName, amount, method, date, notes]
+        status: { type: string, enum: [completed, cancelled, reversed] }
+        cancelledAt: { type: string, format: date-time, nullable: true }
+        reversalReason: { type: string, nullable: true }
+        reversalOfId: { type: integer, nullable: true }
+      required: [id, customerId, customerName, amount, method, date, notes, status]
     PaymentInput:
       type: object
       properties:
@@ -694,7 +846,11 @@ components:
         date: { type: string, format: date }
         paymentMethod: { type: string }
         description: { type: string }
-      required: [id, category, amount, date, paymentMethod, description]
+        status: { type: string, enum: [completed, cancelled, reversed] }
+        cancelledAt: { type: string, format: date-time, nullable: true }
+        reversalReason: { type: string, nullable: true }
+        reversalOfId: { type: integer, nullable: true }
+      required: [id, category, amount, date, paymentMethod, description, status]
     ExpenseInput:
       type: object
       properties:
@@ -704,6 +860,19 @@ components:
         paymentMethod: { type: string }
         description: { type: string }
       required: [category, amount, date, paymentMethod]
+    TransactionActionInput:
+      type: object
+      properties:
+        reason: { type: string, minLength: 1 }
+      required: [reason]
+    TransactionAction:
+      type: object
+      properties:
+        id: { type: integer }
+        status: { type: string, enum: [completed, cancelled, reversed] }
+        reason: { type: string }
+        reversalOfId: { type: integer, nullable: true }
+      required: [id, status]
     StockMovement:
       type: object
       properties:

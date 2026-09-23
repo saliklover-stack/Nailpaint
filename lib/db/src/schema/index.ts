@@ -78,6 +78,10 @@ export const purchasesTable = pgTable("purchases", {
   date: date("date", { mode: "string" }).notNull(),
   invoiceNumber: text("invoice_number").notNull().default(""),
   notes: text("notes").notNull().default(""),
+  status: text("status").notNull().default("completed"),
+  cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  reversalReason: text("reversal_reason"),
+  reversalOfId: integer("reversal_of_id"),
 });
 
 export const productionTable = pgTable("production", {
@@ -87,6 +91,10 @@ export const productionTable = pgTable("production", {
   unitCost: numeric("unit_cost", { precision: 20, scale: 6 }).notNull(),
   totalCost: numeric("total_cost", { precision: 20, scale: 6 }).notNull(),
   date: date("date", { mode: "string" }).notNull(),
+  status: text("status").notNull().default("completed"),
+  cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  reversalReason: text("reversal_reason"),
+  reversalOfId: integer("reversal_of_id"),
 });
 
 export const salesTable = pgTable("sales", {
@@ -102,6 +110,10 @@ export const salesTable = pgTable("sales", {
   paidAmount: numeric("paid_amount", { precision: 20, scale: 6 }).notNull().default("0"),
   balanceDue: numeric("balance_due", { precision: 20, scale: 6 }).notNull().default("0"),
   date: date("date", { mode: "string" }).notNull(),
+  status: text("status").notNull().default("completed"),
+  cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  reversalReason: text("reversal_reason"),
+  reversalOfId: integer("reversal_of_id"),
 });
 
 export const paymentsTable = pgTable("payments", {
@@ -111,6 +123,10 @@ export const paymentsTable = pgTable("payments", {
   method: text("method").notNull(),
   date: date("date", { mode: "string" }).notNull(),
   notes: text("notes").notNull().default(""),
+  status: text("status").notNull().default("completed"),
+  cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  reversalReason: text("reversal_reason"),
+  reversalOfId: integer("reversal_of_id"),
 });
 
 export const expensesTable = pgTable("expenses", {
@@ -120,6 +136,10 @@ export const expensesTable = pgTable("expenses", {
   date: date("date", { mode: "string" }).notNull(),
   paymentMethod: text("payment_method").notNull(),
   description: text("description").notNull().default(""),
+  status: text("status").notNull().default("completed"),
+  cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  reversalReason: text("reversal_reason"),
+  reversalOfId: integer("reversal_of_id"),
 });
 
 export const stockTransactionsTable = pgTable("stock_transactions", {
@@ -132,6 +152,7 @@ export const stockTransactionsTable = pgTable("stock_transactions", {
   unit: text("unit").notNull(),
   transactionType: text("transaction_type").notNull(),
   referenceId: integer("reference_id").notNull(),
+  reversalOfId: integer("reversal_of_id"),
   date: timestamp("date", { withTimezone: true }).notNull().defaultNow(),
   notes: text("notes").notNull().default(""),
 });
