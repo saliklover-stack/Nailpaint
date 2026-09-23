@@ -16,5 +16,10 @@ export interface Material {
   minimumStock: number;
   currentStock: number;
   averageCost: number;
+  /**
+     * Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.
+     * @minimum 1
+     */
+  packagingBottles: number;
   active: boolean;
 }

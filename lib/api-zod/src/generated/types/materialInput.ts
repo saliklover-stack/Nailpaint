@@ -19,5 +19,10 @@ export interface MaterialInput {
   conversionFactor: number;
   /** @minimum 0 */
   minimumStock: number;
+  /**
+     * Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.
+     * @minimum 1
+     */
+  packagingBottles?: number;
   active?: boolean;
 }

@@ -458,8 +458,12 @@ components:
         minimumStock: { type: number }
         currentStock: { type: number }
         averageCost: { type: number }
+        packagingBottles:
+          type: integer
+          minimum: 1
+          description: Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.
         active: { type: boolean }
-      required: [id, name, category, purchaseUnit, baseUnit, conversionFactor, minimumStock, currentStock, averageCost, active]
+      required: [id, name, category, purchaseUnit, baseUnit, conversionFactor, minimumStock, currentStock, averageCost, packagingBottles, active]
     MaterialInput:
       type: object
       properties:
@@ -469,6 +473,10 @@ components:
         baseUnit: { type: string, minLength: 1 }
         conversionFactor: { type: number, exclusiveMinimum: 0 }
         minimumStock: { type: number, minimum: 0 }
+        packagingBottles:
+          type: integer
+          minimum: 1
+          description: Packaging capacity metadata; Box is 24 bottles and is not converted into finished-product stock.
         active: { type: boolean }
       required: [name, category, purchaseUnit, baseUnit, conversionFactor, minimumStock]
     Supplier:
